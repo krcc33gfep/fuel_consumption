@@ -56,22 +56,21 @@
   .row {
     border-bottom:1px solid #222;
     padding:6px 4px;
-    line-height:1.3em; /* 行間を少し詰めた */
+    line-height:1.4em;
   }
 
   .line1, .line2, .line3 {
     display:flex;
     justify-content:space-between;
     flex-wrap:wrap;
+    font-size:0.95em; /* 全行統一 */
+    color:#eee;
   }
-
-  .line1 { color:#ccc; font-size:0.95em; }
-  .line2, .line3 { font-size:0.9em; color:#eee; }
 
   .highlight { color:#0f0; font-weight:500; }
 
   @media (max-width:600px){
-    .line2, .line3 { font-size:0.85em; }
+    .line1, .line2, .line3 { font-size:0.9em; }
   }
 </style>
 </head>
@@ -101,21 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
-  // 日付を 2017/7/15 → 2017年7月15日に変換
   function formatDateDisplay(str) {
     const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return str;
     return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
   }
 
-  // ソート用にDate化
   function parseSlashDate(str) {
     const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
 
-  // CSV取得
   fetch(csvUrl)
     .then(r => r.text())
     .then(csvText => {
@@ -133,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
     });
 
-  // ソート＆描画
   function sortAndRender() {
     const key = sortKey;
     rows.sort((a, b) => {
@@ -145,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
     render(rows);
   }
 
-  // 描画
   function render(data) {
     const out = document.getElementById("output");
     out.innerHTML = "";
@@ -155,18 +149,19 @@ document.addEventListener("DOMContentLoaded", () => {
       el.innerHTML = `
         <div class="line1">
           <div>${formatDateDisplay(r["日付"] || "")}</div>
-          <div>${r["経過年月"] || ""}</div>
+          <div class="highlight">${r["燃費"] || ""}km/L</div>
         </div>
         <div class="line2">
           <div>${r["数量"] || ""}L</div>
           <div>${r["金額"] || ""}円</div>
           <div>${r["単価"] || ""}円/L</div>
-          <div class="highlight">${r["燃費"] || ""}km/L</div>
         </div>
         <div class="line3">
-          <div>ODO: ${r["ODO"] || ""}km</div>
-          <div>TRIP: ${r["TRIP"] || ""}km</div>
-        </div>`;
+          <div>${r["ODO"] || ""}km</div>
+          <div>${r["TRIP"] || ""}km</div>
+          <div>${r["経過年月"] || ""}</div>
+        </div>
+      `;
       out.appendChild(el);
     });
   }
