@@ -5,16 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>燃費チェックビューワー</title>
 
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500&display=swap" rel="stylesheet">
+<!-- 読みやすい日本語フォント -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
   body {
     background:#000;
     color:#fff;
-    font-family:"M PLUS 1 Code", monospace;
+    font-family:"M PLUS Rounded 1c", sans-serif;
     margin:0;
-    font-size:14px;
+    font-size:17px;
   }
 
   header {
@@ -29,7 +30,7 @@
     justify-content:center;
     flex-wrap:wrap;
     gap:4px;
-    font-family:"M PLUS 1 Code", monospace;
+    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
   #sortButtons button {
@@ -37,23 +38,21 @@
     min-width:60px;
     background:#222;
     color:#fff;
-    border:1px solid #555;      /* 枠線 */
+    border:1px solid #555;
     border-radius:6px;
-    padding:4px 8px;
-    font-size:14px;
+    padding:3px 8px;
+    font-size:17px;
     line-height:1;
-    height:30px;
+    height:32px;
     box-sizing:border-box;
     cursor:pointer;
     transition:border-color 0.2s, color 0.2s;
-    font-family:"M PLUS 1 Code", monospace;
+    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
-  /* hover 時は枠だけ光る */
   #sortButtons button:hover {
-    border-color:#0f0;  /* 枠だけ緑に */
-    color:#0f0;         /* 文字も緑に変化 */
-    background:#222;    /* 背景はそのまま */
+    border-color:#0f0;
+    color:#0f0;
   }
 
   .container {
@@ -67,30 +66,40 @@
     line-height:1.4em;
   }
 
+  /* 上段（line1） */
   .line1 {
     display: grid;
     grid-template-columns: 110px 1fr 1fr 110px;
     align-items: center;
-    font-size:0.95em;
+    font-size:0.95em; /* ← 少し小さめに調整 */
     color:#eee;
   }
   .line1 div { text-align: right; }
+  .line1 div:first-child,
+  .line1 div:last-child {
+    color:#aaa; /* 日付・経過年月を控えめに */
+  }
 
+  /* 下段（line2） */
   .line2 {
     display: grid;
-    grid-template-columns: 110px 1fr 1fr 110px;
+    grid-template-columns: 120px 1fr 1fr 120px;
     align-items: center;
-    font-size:0.95em;
+    font-size:1.3em; /* ← 約30%拡大して主役感を出す */
     color:#eee;
   }
   .line2 div { text-align: right; }
   .line2 .highlight {
     color:#0f0;
-    font-weight:500;
+    font-weight:600; /* ← 太字＆色で自然に強調 */
+    font-size:1em;   /* ← 行全体と同じサイズ */
   }
 
   @media (max-width:600px){
-    .line1, .line2 { font-size:0.9em; }
+    body { font-size:15px; }
+    #sortButtons button { font-size:15px; }
+    .line1 { font-size:0.9em; }
+    .line2 { font-size:1.2em; grid-template-columns: 110px 1fr 1fr 110px; }
   }
 </style>
 </head>
@@ -182,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 並び替えボタン処理
+  // ===== ソートボタン処理 =====
   const buttons = document.querySelectorAll("#sortButtons button");
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
