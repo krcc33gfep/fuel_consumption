@@ -60,9 +60,9 @@
   }
 
   .line1, .line2 {
-    display:flex;
-    justify-content:space-between;
-    flex-wrap:wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* 4列に揃える */
+    justify-items: end; /* 右揃え */
     font-size:0.95em;
     color:#eee;
   }
