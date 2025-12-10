@@ -35,20 +35,20 @@ body {
   min-width:60px;
   background:#222;
   color:#fff;
-  border:1px solid #333;
+  border:1px solid #555;   /* ← 少し細めで落ち着いた枠線 */
   border-radius:6px;
-  padding:3px 8px;          /* ← 高さを抑えるため少し小さめ */
-  font-size:16px;           /* ← 文字を大きく */
-  line-height:1;            /* ← 行間を詰めて高さが膨らむのを防ぐ */
-  height:32px;              /* ← 高さ固定で形を安定化 */
-  box-sizing:border-box;    /* ← paddingを含めて高さを一定に */
+  padding:3px 8px;
+  font-size:16px;
+  line-height:1;
+  height:32px;
+  box-sizing:border-box;
   cursor:pointer;
-  transition:background 0.2s, color 0.2s;
+  transition:border-color 0.2s, color 0.2s;
 }
 
 #sortButtons button:hover {
-  background:#0f0;
-  color:#000;
+  border-color:#0f0;       /* ← 枠線だけ緑に */
+  color:#0f0;              /* ← 文字色も少し合わせて強調 */
 }
 
   .container {
