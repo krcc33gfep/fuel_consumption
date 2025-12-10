@@ -6,30 +6,78 @@
 <title>燃費チェックビューワー</title>
 
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
-  body { background:#000; color:#fff; font-family:"M PLUS 1 Code", monospace; margin:0; }
+  body {
+    background:#000;
+    color:#fff;
+    font-family:"M PLUS 1 Code", monospace;
+    margin:0;
+  }
+
   header {
-    display:flex; align-items:center; justify-content:center;
-    padding:10px; background:#111; flex-wrap:wrap; border-bottom:1px solid #222;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+    background:#111;
+    flex-wrap:wrap;
+    border-bottom:1px solid #222;
   }
+
   label { margin-right:6px; }
+
   select, button {
-    background:#222; color:#fff; border:1px solid #333; border-radius:6px;
-    padding:6px 10px; font-size:14px; margin:4px;
+    background:#222;
+    color:#fff;
+    border:1px solid #333;
+    border-radius:6px;
+    padding:6px 10px;
+    font-size:14px;
+    margin:4px;
   }
-  button { cursor:pointer; transition:background 0.2s; }
-  button:hover { background:#0f0; color:#000; }
-  .container { padding:10px; box-sizing:border-box; }
-  .row { border-bottom:1px solid #222; padding:8px 4px; line-height:1.5em; }
-  .line1, .line2, .line3 { display:flex; justify-content:space-between; flex-wrap:wrap; }
+
+  button {
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+
+  button:hover {
+    background:#0f0;
+    color:#000;
+  }
+
+  .container {
+    padding:10px;
+    box-sizing:border-box;
+  }
+
+  .row {
+    border-bottom:1px solid #222;
+    padding:8px 4px;
+    line-height:1.5em;
+  }
+
+  .line1, .line2, .line3 {
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+
   .line1 { color:#ccc; font-size:0.95em; }
   .line2, .line3 { font-size:0.9em; color:#eee; }
-  .highlight { color:#0f0; font-weight:500; }
+
+  .highlight { color:#0f0; font-weight:500; } /* 燃費強調 */
+
+  @media (max-width:600px){
+    .line2, .line3 { font-size:0.85em; }
+  }
 </style>
 </head>
 
 <body>
+
 <header>
   <label for="sortSelect">並び替え：</label>
   <select id="sortSelect">
@@ -46,81 +94,97 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
   let rows = [];
   let sortKey = "日付";
-  let sortAsc = false;
+  let sortAsc = false; // false=降順（最新が上）
 
-  const sheetId = "126-Q7pl3n12bM4ud4DANItAqoT2sbtrVd3c45rL9JIw";
-  const sheetName = "燃費";
-  const jsonUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+  const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
+  /* 日付文字列→Date変換 */
   function parseSlashDate(str){
     const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
     if(!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
 
-  fetch(jsonUrl)
+  /* CSV読み込み */
+  fetch(csvUrl)
     .then(r => r.text())
-    .then(text => {
-      const match = text.match(/google\\.visualization\\.Query\\.setResponse\\(([\s\S]*)\\);/);
-      if (!match) throw new Error("JSON抽出失敗");
-      const json = JSON.parse(match[1]);
-      const cols = json.table.cols.map(c => c.label);
-      rows = json.table.rows.map(row => {
-        const obj = {};
-        row.c.forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : ""; });
-        return obj;
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          rows = results.data;
+          sortAndRender();
+        }
       });
-      sortAndRender();
     })
     .catch(err => {
       document.getElementById("output").innerHTML = "❌ データの読み込みに失敗しました。";
       console.error("Fetch error:", err);
     });
 
+  /* ソート処理 */
   function sortAndRender(){
     const key = sortKey;
     rows.sort((a,b)=>{
-      let av=a[key]||"", bv=b[key]||"";
-      if(key==="日付"){ av=parseSlashDate(av); bv=parseSlashDate(bv); }
-      else { av=parseFloat(av)||0; bv=parseFloat(bv)||0; }
+      let av = a[key] || "";
+      let bv = b[key] || "";
+      if(key === "日付"){
+        av = parseSlashDate(av);
+        bv = parseSlashDate(bv);
+      } else {
+        av = parseFloat(av) || 0;
+        bv = parseFloat(bv) || 0;
+      }
       return sortAsc ? av - bv : bv - av;
     });
     render(rows);
   }
 
+  /* 表示処理 */
   function render(data){
     const out = document.getElementById("output");
     out.innerHTML = "";
     data.forEach(r=>{
-      const el=document.createElement("div");
-      el.className="row";
-      el.innerHTML=`
-        <div class="line1"><div>${r["日付"]||""}</div><div>${r["経過年月"]||""}</div></div>
+      const el = document.createElement("div");
+      el.className = "row";
+      el.innerHTML = `
+        <div class="line1">
+          <div>${r["日付"] || ""}</div>
+          <div>${r["経過年月"] || ""}</div>
+        </div>
         <div class="line2">
-          <div>数量: ${r["数量"]||""}L</div>
-          <div>金額: ${r["金額"]||""}円</div>
-          <div>単価: ${r["単価"]||""}円/L</div>
-          <div class="highlight">燃費: ${r["燃費"]||""}km/L</div>
+          <div>数量: ${r["数量"] || ""}L</div>
+          <div>金額: ${r["金額"] || ""}円</div>
+          <div>単価: ${r["単価"] || ""}円/L</div>
+          <div class="highlight">燃費: ${r["燃費"] || ""}km/L</div>
         </div>
         <div class="line3">
-          <div>ODO: ${r["ODO"]||""}km</div>
-          <div>TRIP: ${r["TRIP"]||""}km</div>
-        </div>`;
+          <div>ODO: ${r["ODO"] || ""}km</div>
+          <div>TRIP: ${r["TRIP"] || ""}km</div>
+        </div>
+      `;
       out.appendChild(el);
     });
   }
 
+  /* イベント */
   document.getElementById("sortSelect").addEventListener("change", e=>{
-    sortKey = e.target.value; sortAndRender();
-  });
-  document.getElementById("toggleOrder").addEventListener("click", ()=>{
-    sortAsc=!sortAsc;
-    document.getElementById("toggleOrder").textContent=sortAsc?"⬆︎ 昇順":"⬇︎ 降順";
+    sortKey = e.target.value;
     sortAndRender();
   });
+
+  document.getElementById("toggleOrder").addEventListener("click", ()=>{
+    sortAsc = !sortAsc;
+    document.getElementById("toggleOrder").textContent = sortAsc ? "⬆︎ 昇順" : "⬇︎ 降順";
+    sortAndRender();
+  });
+
 });
 </script>
+
 </body>
 </html>
