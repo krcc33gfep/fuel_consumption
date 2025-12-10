@@ -72,16 +72,18 @@
   /* 2行目 */
   .line2 {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 0.7fr 0.7fr 1fr; /* 2列目・3列目を少し狭く */
     align-items: center;
     font-size:0.95em;
     color:#eee;
   }
-  .line2 div { text-align: right; }  /* 全部右寄せ */
+  .line2 div { text-align: right; }
   .line2 .highlight { color:#0f0; font-weight:500; }
 
+  /* スマホ対応 */
   @media (max-width:600px){
     .line1, .line2 { font-size:0.9em; }
+    .line2 { grid-template-columns: 1fr 0.8fr 0.8fr 1fr; } /* スマホでは少し広め */
   }
 </style>
 </head>
