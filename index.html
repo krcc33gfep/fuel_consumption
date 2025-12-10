@@ -14,7 +14,7 @@
     color:#fff;
     font-family:"M PLUS 1 Code", monospace;
     margin:0;
-    font-size:16px; /* 全体を少し大きく */
+    font-size:14px;
   }
 
   header {
@@ -37,21 +37,23 @@
     min-width:60px;
     background:#222;
     color:#fff;
-    border:1px solid #555;     /* 細めの枠線 */
+    border:1px solid #555;      /* 枠線 */
     border-radius:6px;
-    padding:3px 8px;
-    font-size:16px;
+    padding:4px 8px;
+    font-size:14px;
     line-height:1;
-    height:32px;
+    height:30px;
     box-sizing:border-box;
     cursor:pointer;
     transition:border-color 0.2s, color 0.2s;
-    font-family:"M PLUS 1 Code", monospace; /* フォント統一 */
+    font-family:"M PLUS 1 Code", monospace;
   }
 
+  /* hover 時は枠だけ光る */
   #sortButtons button:hover {
-    border-color:#0f0; /* 枠だけ色変更 */
-    color:#0f0;
+    border-color:#0f0;  /* 枠だけ緑に */
+    color:#0f0;         /* 文字も緑に変化 */
+    background:#222;    /* 背景はそのまま */
   }
 
   .container {
@@ -65,34 +67,26 @@
     line-height:1.4em;
   }
 
-  /* 上段（line1） */
   .line1 {
     display: grid;
     grid-template-columns: 110px 1fr 1fr 110px;
     align-items: center;
-    font-size:1em;
+    font-size:0.95em;
     color:#eee;
   }
   .line1 div { text-align: right; }
-  /* 日付と経過年月をグレーに */
-  .line1 div:first-child,
-  .line1 div:last-child {
-    color:#aaa;
-  }
 
-  /* 下段（line2） */
   .line2 {
     display: grid;
     grid-template-columns: 110px 1fr 1fr 110px;
     align-items: center;
-    font-size:1em;
+    font-size:0.95em;
     color:#eee;
   }
   .line2 div { text-align: right; }
   .line2 .highlight {
     color:#0f0;
-    font-weight:600;
-    font-size:1.1em; /* 燃費を少し目立たせる */
+    font-weight:500;
   }
 
   @media (max-width:600px){
@@ -125,13 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
   function formatDateDisplay(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return str;
     return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
   }
 
   function parseSlashDate(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
@@ -188,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== ソートボタン処理 =====
+  // 並び替えボタン処理
   const buttons = document.querySelectorAll("#sortButtons button");
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
