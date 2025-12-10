@@ -1,95 +1,96 @@
 <script>
-let rows = [];
-let sortKey = "日付";
-let sortAsc = false; // false=降順（最新が上）
+document.addEventListener("DOMContentLoaded", () => {
 
-const sheetId = "126-Q7pl3n12bM4ud4DANItAqoT2sbtrVd3c45rL9JIw";
-const sheetName = "燃費";
+  let rows = [];
+  let sortKey = "日付";
+  let sortAsc = false;
 
-/* Google Visualization APIを使用 */
-const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+  const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
-fetch(csvUrl)
-  .then(r => r.text())
-  .then(text => {
-    // JSONPっぽい返り値を純粋なJSONに変換
-    const json = JSON.parse(text.substr(47).slice(0, -2));
-    const cols = json.table.cols.map(c => c.label);
-    rows = json.table.rows.map(row => {
-      const obj = {};
-      row.c.forEach((cell, i) => {
-        obj[cols[i]] = cell ? cell.v : "";
+  /* 日付フォーマット変換: 2017/7/15 → 2017年7月15日 */
+  function formatDateDisplay(str){
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if(!m) return str;
+    return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
+  }
+
+  /* 日付→Date型（ソート用） */
+  function parseSlashDate(str){
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if(!m) return new Date(0);
+    return new Date(+m[1], +m[2]-1, +m[3]);
+  }
+
+  fetch(csvUrl)
+    .then(r => r.text())
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          rows = results.data;
+          sortAndRender();
+        }
       });
-      return obj;
+    })
+    .catch(err => {
+      document.getElementById("output").innerHTML = "❌ データの読み込みに失敗しました。";
+      console.error("Fetch error:", err);
     });
+
+  function sortAndRender(){
+    const key = sortKey;
+    rows.sort((a,b)=>{
+      let av = a[key] || "";
+      let bv = b[key] || "";
+      if(key === "日付"){
+        av = parseSlashDate(av);
+        bv = parseSlashDate(bv);
+      } else {
+        av = parseFloat(av) || 0;
+        bv = parseFloat(bv) || 0;
+      }
+      return sortAsc ? av - bv : bv - av;
+    });
+    render(rows);
+  }
+
+  function render(data){
+    const out = document.getElementById("output");
+    out.innerHTML = "";
+    data.forEach(r=>{
+      const el = document.createElement("div");
+      el.className = "row";
+      el.innerHTML = `
+        <div class="line1">
+          <div>${formatDateDisplay(r["日付"] || "")}</div>
+          <div>${r["経過年月"] || ""}</div>
+        </div>
+        <div class="line2">
+          <div>${r["数量"] || ""}L</div>
+          <div>${r["金額"] || ""}円</div>
+          <div>${r["単価"] || ""}円/L</div>
+          <div class="highlight">${r["燃費"] || ""}km/L</div>
+        </div>
+        <div class="line3">
+          <div>ODO: ${r["ODO"] || ""}km</div>
+          <div>TRIP: ${r["TRIP"] || ""}km</div>
+        </div>
+      `;
+      out.appendChild(el);
+    });
+  }
+
+  document.getElementById("sortSelect").addEventListener("change", e=>{
+    sortKey = e.target.value;
     sortAndRender();
-  })
-  .catch(err => {
-    document.getElementById("output").innerHTML = "❌ データの読み込みに失敗しました。";
-    console.error("Fetch error:", err);
   });
 
-/* 日付文字列→Date変換 */
-function parseSlashDate(str){
-  const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-  if(!m) return new Date(0);
-  return new Date(+m[1], +m[2]-1, +m[3]);
-}
-
-/* ソート処理 */
-function sortAndRender(){
-  const key = sortKey;
-  rows.sort((a,b)=>{
-    let av = a[key] || "";
-    let bv = b[key] || "";
-    if(key === "日付"){
-      av = parseSlashDate(av);
-      bv = parseSlashDate(bv);
-    } else {
-      av = parseFloat(av) || 0;
-      bv = parseFloat(bv) || 0;
-    }
-    return sortAsc ? av - bv : bv - av;
+  document.getElementById("toggleOrder").addEventListener("click", ()=>{
+    sortAsc = !sortAsc;
+    document.getElementById("toggleOrder").textContent = sortAsc ? "⬆︎ 昇順" : "⬇︎ 降順";
+    sortAndRender();
   });
-  render(rows);
-}
 
-/* レンダリング */
-function render(data){
-  const out = document.getElementById("output");
-  out.innerHTML = "";
-  data.forEach(r=>{
-    const el = document.createElement("div");
-    el.className = "row";
-    el.innerHTML = `
-      <div class="line1">
-        <div>${r["日付"] || ""}</div>
-        <div>${r["経過年月"] || ""}</div>
-      </div>
-      <div class="line2">
-        <div>数量: ${r["数量"] || ""}L</div>
-        <div>金額: ${r["金額"] || ""}円</div>
-        <div>単価: ${r["単価"] || ""}円/L</div>
-        <div class="highlight">燃費: ${r["燃費"] || ""}km/L</div>
-      </div>
-      <div class="line3">
-        <div>ODO: ${r["ODO"] || ""}km</div>
-        <div>TRIP: ${r["TRIP"] || ""}km</div>
-      </div>
-    `;
-    out.appendChild(el);
-  });
-}
-
-/* イベント */
-document.getElementById("sortSelect").addEventListener("change", e=>{
-  sortKey = e.target.value;
-  sortAndRender();
-});
-
-document.getElementById("toggleOrder").addEventListener("click", ()=>{
-  sortAsc = !sortAsc;
-  document.getElementById("toggleOrder").textContent = sortAsc ? "⬆︎ 昇順" : "⬇︎ 降順";
-  sortAndRender();
 });
 </script>
