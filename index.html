@@ -59,29 +59,15 @@
     line-height:1.4em;
   }
 
-  /* 1行目 */
-  .line1 {
+  .line1, .line2 {
     display: grid;
-    grid-template-columns: auto 1fr 1fr auto;
-    align-items: center;
+    grid-template-columns: repeat(4, 1fr); /* 4列均等 */
+    justify-items: end; /* 右寄せ */
     font-size:0.95em;
     color:#eee;
   }
-  .line1 .date { text-align: left; }
-  .line1 .odo, .line1 .trip { text-align: right; }
-  .line1 .elapsed { text-align: right; }
 
-  /* 2行目 */
-  .line2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    align-items: center;
-    font-size:0.95em;
-    color:#eee;
-  }
-  .line2 .quantity { text-align: right; }
-  .line2 .price, .line2 .unit { text-align: right; }
-  .line2 .efficiency { text-align: right; color:#0f0; font-weight:500; }
+  .highlight { color:#0f0; font-weight:500; }
 
   @media (max-width:600px){
     .line1, .line2 { font-size:0.9em; }
@@ -162,16 +148,16 @@ document.addEventListener("DOMContentLoaded", () => {
       el.className = "row";
       el.innerHTML = `
         <div class="line1">
-          <div class="date">${formatDateDisplay(r["日付"] || "")}</div>
-          <div class="odo">${r["ODO"] || ""}km</div>
-          <div class="trip">${r["TRIP"] || ""}km</div>
-          <div class="elapsed">${r["経過年月"] || ""}</div>
+          <div>${formatDateDisplay(r["日付"] || "")}</div>
+          <div>${r["ODO"] || ""}km</div>
+          <div>${r["TRIP"] || ""}km</div>
+          <div>${r["経過年月"] || ""}</div>
         </div>
         <div class="line2">
-          <div class="quantity">${r["数量"] || ""}L</div>
-          <div class="price">${r["金額"] || ""}円</div>
-          <div class="unit">${r["単価"] || ""}円/L</div>
-          <div class="efficiency">${r["燃費"] || ""}km/L</div>
+          <div>${r["数量"] || ""}L</div>
+          <div>${r["金額"] || ""}円</div>
+          <div>${r["単価"] || ""}円/L</div>
+          <div class="highlight">${r["燃費"] || ""}km/L</div>
         </div>
       `;
       out.appendChild(el);
