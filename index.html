@@ -36,10 +36,14 @@ body {
   padding:3px 8px;
 }
 
-  #sortButtons button:hover {
-    background:#0f0;
-    color:#000;
-  }
+#sortButtons button {
+  font-size:16px;        /* ← 好きな文字サイズ */
+  line-height:1;         /* ← 行間を詰めて高さが膨らむのを防ぐ */
+  padding:4px 10px;      /* ← 上下左右の余白を再調整 */
+  height:32px;           /* ← 高さを固定（好みに調整） */
+  border-radius:6px;     /* ← 角の丸みを維持 */
+  box-sizing:border-box; /* ← padding含めて高さを安定化 */
+}
 
   .container {
     padding:10px;
