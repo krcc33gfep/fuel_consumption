@@ -17,12 +17,15 @@
     margin:0;
     font-size:17px;
     overflow-x:hidden;
+    overflow-y:auto;
   }
 
-  /* ← 全体をラップする領域 */
+  /* 全体をラップ */
   #mainWrap {
     transform-origin: top left;
-    transition: transform 0.3s ease, font-size 0.3s ease;
+    transition: transform 0.3s ease;
+    width: 414px; /* ←縦画面基準幅 (iPhone 13など) */
+    margin: 0 auto;
   }
 
   header {
@@ -37,7 +40,6 @@
     justify-content:center;
     flex-wrap:wrap;
     gap:4px;
-    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
   #sortButtons button {
@@ -49,12 +51,9 @@
     border-radius:6px;
     padding:3px 8px;
     font-size:17px;
-    line-height:1;
     height:32px;
-    box-sizing:border-box;
     cursor:pointer;
     transition:border-color 0.2s, color 0.2s;
-    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
   #sortButtons button:hover {
@@ -99,7 +98,6 @@
   .line2 .highlight {
     color:#0f0;
     font-weight:600;
-    font-size:1em;
   }
 
   @media (max-width:600px){
@@ -113,7 +111,6 @@
 
 <body>
 
-<!-- ✅ ここに全体を包むラッパー -->
 <div id="mainWrap">
 
 <header>
@@ -128,7 +125,7 @@
 
 <div class="container" id="output">読み込み中...</div>
 
-</div><!-- /#mainWrap -->
+</div><!-- /mainWrap -->
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -140,13 +137,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
   function formatDateDisplay(str) {
-    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
     if (!m) return str;
     return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
   }
 
   function parseSlashDate(str) {
-    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
     if (!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
@@ -224,13 +221,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ===== 横画面のとき拡大する =====
+  // ===== 横画面時に横幅フィットでズーム =====
+  const BASE_WIDTH = 414; // ←縦画面デザイン幅（px）
+
   function adjustScale() {
     const wrap = document.getElementById("mainWrap");
     const isLandscape = window.matchMedia("(orientation: landscape)").matches;
     if (isLandscape) {
-      // 高さ基準でスケール調整（横幅に合わせて拡大）
-      const scale = window.innerWidth / window.innerHeight;
+      const scale = window.innerWidth / BASE_WIDTH;
       wrap.style.transform = `scale(${scale})`;
     } else {
       wrap.style.transform = "scale(1)";
