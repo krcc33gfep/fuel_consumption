@@ -89,6 +89,13 @@
     color:#eee;
   }
   .line2 div { text-align: right; }
+
+  /* 金額（2番目の列）だけ色変更 */
+  .line2 div:nth-child(2) {
+    color:#FFB000; /* ← アンバー。金額を自然に強調 */
+  }
+
+  /* 燃費（右端） */
   .line2 .highlight {
     color:#0f0;
     font-weight:normal; /* ← 太字を解除 */
