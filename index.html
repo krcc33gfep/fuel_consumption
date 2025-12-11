@@ -16,6 +16,11 @@
     font-family:"M PLUS Rounded 1c", sans-serif;
     margin:0;
     font-size:17px;
+    overflow-x:hidden;
+  }
+
+  /* ← 全体をラップする領域 */
+  #mainWrap {
     transform-origin: top left;
     transition: transform 0.3s ease, font-size 0.3s ease;
   }
@@ -108,6 +113,9 @@
 
 <body>
 
+<!-- ✅ ここに全体を包むラッパー -->
+<div id="mainWrap">
+
 <header>
   <div id="sortButtons">
     <button data-key="日付">日付 ▼</button>
@@ -119,6 +127,8 @@
 </header>
 
 <div class="container" id="output">読み込み中...</div>
+
+</div><!-- /#mainWrap -->
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -214,19 +224,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ===== 画面の向きによって拡大率を調整 =====
+  // ===== 横画面のとき拡大する =====
   function adjustScale() {
+    const wrap = document.getElementById("mainWrap");
     const isLandscape = window.matchMedia("(orientation: landscape)").matches;
-    const body = document.body;
     if (isLandscape) {
-      // 横向き時：画面の高さを基準に拡大率を計算
+      // 高さ基準でスケール調整（横幅に合わせて拡大）
       const scale = window.innerWidth / window.innerHeight;
-      body.style.transform = `scale(${scale})`;
-      body.style.fontSize = `${17 * scale}px`;
+      wrap.style.transform = `scale(${scale})`;
     } else {
-      // 縦向き時：通常表示
-      body.style.transform = "scale(1)";
-      body.style.fontSize = "17px";
+      wrap.style.transform = "scale(1)";
     }
   }
 
