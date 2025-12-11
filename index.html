@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -5,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>燃費チェックビューワー</title>
 
-<!-- 日本語フォント -->
+<!-- 読みやすい日本語フォント -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
@@ -16,16 +17,6 @@
     font-family:"M PLUS Rounded 1c", sans-serif;
     margin:0;
     font-size:17px;
-    overflow-x:hidden;
-    overflow-y:auto;
-  }
-
-  /* 全体をラップ */
-  #mainWrap {
-    transform-origin: top left;
-    transition: transform 0.3s ease;
-    width: 414px; /* ←縦画面基準幅 (iPhone 13など) */
-    margin: 0 auto;
   }
 
   header {
@@ -40,6 +31,7 @@
     justify-content:center;
     flex-wrap:wrap;
     gap:4px;
+    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
   #sortButtons button {
@@ -51,9 +43,12 @@
     border-radius:6px;
     padding:3px 8px;
     font-size:17px;
+    line-height:1;
     height:32px;
+    box-sizing:border-box;
     cursor:pointer;
     transition:border-color 0.2s, color 0.2s;
+    font-family:"M PLUS Rounded 1c", sans-serif;
   }
 
   #sortButtons button:hover {
@@ -77,13 +72,13 @@
     display: grid;
     grid-template-columns: 110px 1fr 1fr 110px;
     align-items: center;
-    font-size:0.95em;
+    font-size:0.95em; /* ← 少し小さめに調整 */
     color:#eee;
   }
   .line1 div { text-align: right; }
   .line1 div:first-child,
   .line1 div:last-child {
-    color:#aaa;
+    color:#aaa; /* 日付・経過年月を控えめに */
   }
 
   /* 下段（line2） */
@@ -91,13 +86,14 @@
     display: grid;
     grid-template-columns: 120px 1fr 1fr 120px;
     align-items: center;
-    font-size:1.3em;
+    font-size:1.3em; /* ← 約30%拡大して主役感を出す */
     color:#eee;
   }
   .line2 div { text-align: right; }
   .line2 .highlight {
     color:#0f0;
-    font-weight:600;
+    font-weight:600; /* ← 太字＆色で自然に強調 */
+    font-size:1em;   /* ← 行全体と同じサイズ */
   }
 
   @media (max-width:600px){
@@ -111,8 +107,6 @@
 
 <body>
 
-<div id="mainWrap">
-
 <header>
   <div id="sortButtons">
     <button data-key="日付">日付 ▼</button>
@@ -125,8 +119,6 @@
 
 <div class="container" id="output">読み込み中...</div>
 
-</div><!-- /mainWrap -->
-
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -137,13 +129,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
   function formatDateDisplay(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return str;
     return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
   }
 
   function parseSlashDate(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
@@ -220,24 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
       sortAndRender();
     });
   });
-
-  // ===== 横画面時に横幅フィットでズーム =====
-  const BASE_WIDTH = 414; // ←縦画面デザイン幅（px）
-
-  function adjustScale() {
-    const wrap = document.getElementById("mainWrap");
-    const isLandscape = window.matchMedia("(orientation: landscape)").matches;
-    if (isLandscape) {
-      const scale = window.innerWidth / BASE_WIDTH;
-      wrap.style.transform = `scale(${scale})`;
-    } else {
-      wrap.style.transform = "scale(1)";
-    }
-  }
-
-  window.addEventListener("resize", adjustScale);
-  window.addEventListener("orientationchange", adjustScale);
-  adjustScale();
 
 });
 </script>
