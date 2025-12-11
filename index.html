@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>燃費チェックビューワー</title>
 
-<!-- 読みやすい日本語フォント -->
+<!-- 日本語フォント -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
@@ -71,13 +71,13 @@
     display: grid;
     grid-template-columns: 110px 1fr 1fr 110px;
     align-items: center;
-    font-size:0.95em; /* ← 少し小さめに調整 */
+    font-size:0.95em;
     color:#eee;
   }
   .line1 div { text-align: right; }
   .line1 div:first-child,
   .line1 div:last-child {
-    color:#aaa; /* 日付・経過年月を控えめに */
+    color:#aaa;
   }
 
   /* 下段（line2） */
@@ -85,14 +85,14 @@
     display: grid;
     grid-template-columns: 120px 1fr 1fr 120px;
     align-items: center;
-    font-size:1.3em; /* ← 約30%拡大して主役感を出す */
+    font-size:1.3em;
     color:#eee;
   }
   .line2 div { text-align: right; }
   .line2 .highlight {
     color:#0f0;
-    font-weight:600; /* ← 太字＆色で自然に強調 */
-    font-size:1em;   /* ← 行全体と同じサイズ */
+    font-weight:600;
+    font-size:1em;
   }
 
   @media (max-width:600px){
@@ -101,15 +101,22 @@
     .line1 { font-size:0.9em; }
     .line2 { font-size:1.2em; grid-template-columns: 110px 1fr 1fr 110px; }
   }
-    @media screen and (orientation: landscape) {
-    html {
-      transform: rotate(-90deg);
-      transform-origin: left top;
+
+  /* ======== 縦画面固定 ======== */
+  html, body {
+    overscroll-behavior: none;
+    touch-action: none;
+  }
+
+  @media screen and (orientation: landscape) {
+    body {
       width: 100vh;
       height: 100vw;
-      overflow-x: hidden;
+      transform: rotate(-90deg);
+      transform-origin: left top;
+      overflow: hidden;
       position: absolute;
-      top: 100%;
+      top: 0;
       left: 0;
     }
   }
