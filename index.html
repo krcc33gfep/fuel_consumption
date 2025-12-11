@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>燃費チェックビューワー</title>
 
-<!-- 読みやすい日本語フォント（M PLUS 1 Code） -->
+<!-- フォント：M PLUS 1 Code -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
@@ -69,38 +69,42 @@
   /* 上段（line1） */
   .line1 {
     display: grid;
-    grid-template-columns: 140px 1fr 1fr 140px;
+    grid-template-columns: 120px 1fr 1fr 120px;
     align-items: center;
-    font-size:1.5em; /* ← 少し小さめに調整 */
+    font-size:1.0em; /* 約17px */
     color:#eee;
   }
   .line1 div { text-align: right; }
   .line1 div:first-child,
   .line1 div:last-child {
-    color:#aaa; /* 日付・経過年月を控えめに */
+    color:#aaa;
   }
 
-/* 下段（line2） */
-.line2 {
-  display: grid;
-  grid-template-columns: 140px 1fr 1fr 140px;
-  align-items: center;
-  font-size:2.0em; /* ← 1.3em → 1.5em に変更（約25.5px） */
-  color:#eee;
-}
-.line2 div { text-align: right; }
+  /* 下段（line2） */
+  .line2 {
+    display: grid;
+    grid-template-columns: 130px 1fr 1fr 130px;
+    align-items: center;
+    font-size:1.6em; /* 約27px */
+    line-height:1.3em;
+    color:#eee;
+  }
+  .line2 div { text-align: right; }
 
-/* 燃費 */
-.line2 .highlight {
-  color:#0f0;
-  font-weight:normal; /* ← 太字を解除 */
-  font-size:1em; /* 行全体と同じ大きさ */
-}
+  .line2 .highlight {
+    color:#0f0;
+    font-weight:normal; /* 太字なし */
+    font-size:1em;
+  }
+
   @media (max-width:600px){
-    body { font-size:15px; }
+    body { font-size:16px; }
     #sortButtons button { font-size:15px; }
-    .line1 { font-size:0.9em; }
-    .line2 { font-size:1.2em; grid-template-columns: 110px 1fr 1fr 110px; }
+    .line1 { font-size:0.95em; }
+    .line2 {
+      font-size:1.8em; /* スマホではさらに少し大きく（約29px） */
+      grid-template-columns: 120px 1fr 1fr 120px;
+    }
   }
 </style>
 </head>
@@ -129,13 +133,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const csvUrl = "https://docs.google.com/spreadsheets/d/1YKMiMq2GpMAR3cqvqeiklqtGuQa8JJx4oO5YnpzxKso/gviz/tq?tqx=out:csv&sheet=燃費";
 
   function formatDateDisplay(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return str;
     return `${m[1]}年${parseInt(m[2])}月${parseInt(m[3])}日`;
   }
 
   function parseSlashDate(str) {
-    const m = str.match(/(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+    const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if (!m) return new Date(0);
     return new Date(+m[1], +m[2]-1, +m[3]);
   }
