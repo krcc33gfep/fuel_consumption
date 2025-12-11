@@ -16,6 +16,8 @@
     font-family:"M PLUS Rounded 1c", sans-serif;
     margin:0;
     font-size:17px;
+    transform-origin: top left;
+    transition: transform 0.3s ease, font-size 0.3s ease;
   }
 
   header {
@@ -100,25 +102,6 @@
     #sortButtons button { font-size:15px; }
     .line1 { font-size:0.9em; }
     .line2 { font-size:1.2em; grid-template-columns: 110px 1fr 1fr 110px; }
-  }
-
-  /* ======== 縦画面固定 ======== */
-  html, body {
-    overscroll-behavior: none;
-    touch-action: none;
-  }
-
-  @media screen and (orientation: landscape) {
-    body {
-      width: 100vh;
-      height: 100vw;
-      transform: rotate(-90deg);
-      transform-origin: left top;
-      overflow: hidden;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
   }
 </style>
 </head>
@@ -230,6 +213,26 @@ document.addEventListener("DOMContentLoaded", () => {
       sortAndRender();
     });
   });
+
+  // ===== 画面の向きによって拡大率を調整 =====
+  function adjustScale() {
+    const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+    const body = document.body;
+    if (isLandscape) {
+      // 横向き時：画面の高さを基準に拡大率を計算
+      const scale = window.innerWidth / window.innerHeight;
+      body.style.transform = `scale(${scale})`;
+      body.style.fontSize = `${17 * scale}px`;
+    } else {
+      // 縦向き時：通常表示
+      body.style.transform = "scale(1)";
+      body.style.fontSize = "17px";
+    }
+  }
+
+  window.addEventListener("resize", adjustScale);
+  window.addEventListener("orientationchange", adjustScale);
+  adjustScale();
 
 });
 </script>
