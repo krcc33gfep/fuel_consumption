@@ -22,7 +22,6 @@
     background:#111;
     border-bottom:1px solid #222;
     padding:10px;
-    position: relative; /* ボタンを絶対配置するため */
   }
 
   /* 並び替えボタン */
@@ -52,29 +51,6 @@
   #sortButtons button:hover {
     border-color:#0f0;
     color:#0f0;
-  }
-
-  /* 入力ページに飛ぶプラスボタン */
-  .add-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #4CAF50;
-    border-radius: 50%;
-    text-decoration: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: background-color 0.3s;
-  }
-
-  .add-button:hover {
-    background-color: #45a049;
   }
 
   /* コンテンツエリア */
@@ -136,10 +112,9 @@
     <button data-key="金額">金額</button>
     <button data-key="単価">単価</button>
     <button data-key="燃費">燃費</button>
+    <!-- 追加ボタン：Apps Script 入力ページ -->
+    <button id="addButton" onclick="window.open('https://script.google.com/macros/s/AKfycbyiwy2EW0XGdc8d3gsrJUq0CSvhZ4pAZVbLWm4T5DuE0cXG3ttZIExb1Q5cjqniNxxbUg/exec', '_blank')">＋</button>
   </div>
-
-  <!-- Apps Script 入力ページに飛ぶボタン -->
-  <a class="add-button" href="https://script.google.com/macros/s/AKfycbyiwy2EW0XGdc8d3gsrJUq0CSvhZ4pAZVbLWm4T5DuE0cXG3ttZIExb1Q5cjqniNxxbUg/exec" target="_blank">+</a>
 </header>
 
 <div class="container" id="output">読み込み中...</div>
@@ -221,16 +196,17 @@ document.addEventListener("DOMContentLoaded", () => {
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const key = btn.dataset.key;
+      // 「＋ボタン」には data-key がないので無視
+      if (!key) return;
+
       if (sortKey === key) sortAsc = !sortAsc;
       else sortAsc = false;
       sortKey = key;
 
       buttons.forEach(b => {
-        if (b.dataset.key === sortKey) {
-          b.textContent = key + (sortAsc ? " ▲" : " ▼");
-        } else {
-          b.textContent = b.dataset.key;
-        }
+        const k = b.dataset.key;
+        if (!k) return;
+        b.textContent = k === sortKey ? k + (sortAsc ? " ▲" : " ▼") : k;
       });
 
       sortAndRender();
