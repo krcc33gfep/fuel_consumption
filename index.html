@@ -28,29 +28,37 @@
   #sortButtons {
     display:flex;
     justify-content:center;
-    flex-wrap:wrap;
     gap:4px;
+    flex-wrap: nowrap;       /* 横一列に固定 */
+    overflow-x: auto;        /* 横幅不足時はスクロール可能 */
   }
 
   #sortButtons button {
-    flex:1;
-    min-width:60px;
-    background:#222;
-    color:#fff;
-    border:1px solid #555;
-    border-radius:6px;
-    padding:3px 8px;
-    font-size:17px;
-    line-height:1;
-    height:32px;
-    box-sizing:border-box;
-    cursor:pointer;
-    transition:border-color 0.2s, color 0.2s;
+    flex: 1 0 14%;          /* 横幅を少し小さめに固定 */
+    min-width: 60px;        /* 最小幅は保持 */
+    background: #222;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 17px;
+    line-height: 1;
+    height: 32px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;    /* テキスト改行防止 */
   }
 
   #sortButtons button:hover {
-    border-color:#0f0;
-    color:#0f0;
+    border-color: #0f0;
+    color: #0f0;
+  }
+
+  /* プラスボタンだけ幅を70%に */
+  #addButton {
+    flex: 0 0 9.8%;        /* 他ボタンの約70% */
+    min-width: 40px;
   }
 
   /* コンテンツエリア */
@@ -95,10 +103,14 @@
   .line2 .highlight { color:#0f0; font-weight:normal; font-size:1em; }
 
   @media (max-width:600px){
-    body { font-size:15px; }
-    #sortButtons button { font-size:15px; }
-    .line1 { font-size:0.9em; }
-    .line2 { font-size:1.2em; }
+    #sortButtons button {
+      flex: 1 0 14%;      /* 幅は維持 */
+      min-width: 50px;
+    }
+    #addButton {
+      flex: 0 0 9.8%;
+      min-width: 36px;
+    }
   }
 </style>
 </head>
@@ -196,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const key = btn.dataset.key;
-      // 「＋ボタン」には data-key がないので無視
+      // 「＋ボタン」は無視
       if (!key) return;
 
       if (sortKey === key) sortAsc = !sortAsc;
