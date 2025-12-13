@@ -7,7 +7,7 @@
 
 <!-- フォント -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet">
-<!-- XLSX.js 読み込み -->
+<!-- XLSX.js 読み込み（CSVでもXLSXでもOK） -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -110,8 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let sortKey = "日付";
   let sortAsc = false;
 
-  // ✅ OneDriveファイル（CSVでもXLSXでもOK）
-  const fileUrl = "https://excel.officeapps.live.com/x/_layouts/XlFileHandler.aspx?sheetName=in&downloadAsCsvEnabled=1&csvUTF8Enabled=1&WacUserType=WOPI&usid=d68a52bc-6fa9-4298-bb1c-9c419f33ff0c&NoAuth=1&waccluster=GJP2";
+  // ✅ あなたのOneDrive CSVファイル直リンク
+  const fileUrl = "https://onedrive.live.com/personal/2427a0b0afdfc521/_layouts/15/download.aspx?UniqueId=589696a9%2Ddbd8%2D4cd4%2D887f%2D7a88b602ffab";
 
   function formatDateDisplay(str) {
     const m = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
